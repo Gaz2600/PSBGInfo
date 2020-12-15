@@ -70,30 +70,30 @@ $xaml.SelectNodes("//*[@Name]") | %{Set-Variable -Name ($_.Name) -Value $Form.Fi
  
 Function RefreshData{ 
 #=========================================================================== 
-# Stores WMI values in WMI Object from System Classes 
+# Stores values in Object from System Classes 
 #=========================================================================== 
-$oWMIOS = @() 
-$oWMINIC = @() 
-$oWMIOS = Get-WmiObject win32_OperatingSystem 
-$oWMINIC = Get-WmiObject Win32_NetworkAdapterConfiguration | Where { $_.IPAddress } | Select -Expand IPAddress | Where { $_ -like '1*' } 
+$oCIMOS = @() 
+$oCIMNIC = @() 
+$oCIMOS = Get-CimInstance win32_OperatingSystem 
+$oCIMNIC = Get-CimInstance Win32_NetworkAdapterConfiguration | Where { $_.IPAddress } | Select -Expand IPAddress | Where { $_ -like '1*' } 
 $imgVersion = Get-Content "C:\ImageVersion.txt"
 $Win10Ver = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseId).ReleaseId
 #=========================================================================== 
-# Links WMI Object Values to XAML Form Fields 
+# Links Object Values to XAML Form Fields 
 #=========================================================================== 
-$txtHostName.Text = $oWMIOS.PSComputerName 
+$txtHostName.Text = Hostname 
  
 #Formats and displays OS name 
-$aOSName = $oWMIOS.name.Split("|") 
+$aOSName = $oCIMOS.name.Split("|") 
 $txtOSName.Text = ($aOSName[0] + " " + "(" + $Win10Ver + ")")
  
 
 #Displays IP Address 
-$txtWindowsIP.Text = $oWMINIC 
+$txtWindowsIP.Text = $oCIMNIC 
  
  
 #Displays OS Version details 
-$txtImageVersion.Text = ($imgVersion + " (" + $oWMIOS.version +")")
+$txtImageVersion.Text = ($imgVersion + " (" + $oCIMOS.version +")")
 }
  
 #=========================================================================== 
